@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Title</title>
+    <style>
+        html,body{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: url("./images/bg.jpg") no-repeat;
+            background-size: cover;
+        }
+
+        .middle{
+            transition: all .3s !important;
+            width: 150px !important;
+            height: 150px !important;
+            left: 50% !important;
+            top: 50% !important;
+            margin-left: -75px !important;
+            margin-top: -75px !important;
+            z-index: 11111 !important;
+        }
+
+        /*摇头样式*/
+        .shake{
+            animation: shake 0.5s linear;
+        }
+        @-webkit-keyframes shake {
+            0% {
+                -webkit-transform: translateX(0);
+            }
+            10% {
+                -webkit-transform: translateX(-10px);
+            }
+            20% {
+                -webkit-transform: translateX(10px);
+            }
+            30% {
+                -webkit-transform: translateX(-10px);
+            }
+            40% {
+                -webkit-transform: translateX(10px);
+            }
+            50% {
+                -webkit-transform: translateX(-10px);
+            }
+            60% {
+                -webkit-transform: translateX(10px);
+            }
+            70% {
+                -webkit-transform: translateX(-10px);
+            }
+            80% {
+                -webkit-transform: translateX(10px);
+            }
+            90% {
+                -webkit-transform: translateX(-10px);
+            }
+            100% {
+                -webkit-transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<!--http://emojisandearthporn.com/300-animals.html-->
+
+<audio src="./audio/你干嘛.mp3" id="warn"></audio>
+<audio src="./audio/winner.mp3" id="success"></audio>
+</body>
+
+<script>
+
+    var warn = document.getElementById('warn');
+    var success = document.getElementById('success');
+
+    // 实现一个函数，让其在一定时间内只执行一次
+    function throttle(fn, delay) {
+        delay = delay || 200;
+        var timer = null;
+        return function () {
+            clearTimeout(timer);
+            timer = setTimeout(fn, delay);
+        }
+    }
+
+
+    // 随机数函数
+    function getRandom(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+    function Emoji(flag) {
+        // 默认不动
+        this.flag = flag || false;
+        // 1-13之间的随机数
+        var num = getRandom(14, 21);
+        // 获取到表情图片的路径
+        this.imgSrc = "./images/" + num + ".png";
+
+        // new对象的时候调用
+        this.render();
+
+        var that = this;
+        flag && setTimeout(function () {
+            that.move();
+        }, 0);
+    }
+
+    Emoji.prototype.render = function () {
+        // 创建img
+        this.img = document.createElement("img");
+        // 设置img的src
+        this.img.src = this.imgSrc;
+        // 生成1-10之间的随机数
+        var time = Math.floor(Math.random() * 10) + 1;
+        // 设置过渡动画
+        this.img.style.transition = "all " + time + "s";
+        // 设置img的宽高
+        this.img.style.width = "50px";
+        this.img.style.height = "50px";
+        // 设置img的位置
+        this.img.style.position = "absolute";
+        // 设置img的left和top
+        this.img.style.left = Math.random() * (window.innerWidth - 50) + "px";
+        this.img.style.top = Math.random() * (window.innerHeight - 50) + "px";
+        // 设置img的z-index
+        this.img.style.zIndex = Math.floor(Math.random() * 100);
+        // 如果flag为true，隐藏
+        // this.flag && (this.img.style.display = "none");
+        // 渲染到页面上
+        document.body.appendChild(this.img);
+        var that = this;
+
+        // 给img添加一个点击事件
+        this.img.onclick = function () {
+            // 如果flag为false代表选对了
+            if (!that.flag) {
+                // alert('恭喜你，选对了');
+                that.img.className = "middle";
+                // 停止运动
+                that.img.ontransitionend = null;
+                // 播放成功
+                success.play();
+            }else {
+                // alert('很遗憾，选错了');
+
+                that.img.className = "shake";
+                // 暂停播放
+                warn.load();
+                // 播放失败
+                warn.play();
+            }
+        }
+
+        this.img.onanimationend = throttle(function () {
+            that.img.className = "";
+        })
+        this.img.ontransitionend = throttle(function () {
+            that.move()
+        })
+    }
+
+    // 让表情动起来
+    Emoji.prototype.move = function () {
+        // 生成1-10之间的随机数
+        var time = Math.floor(Math.random() * 10) + 1;
+        // 设置过渡动画
+        this.img.style.transition = "all " + time + "s";
+        // 设置img的left和top
+        this.img.style.left = Math.random() * (window.innerWidth - 50) + "px";
+        this.img.style.top = Math.random() * (window.innerHeight - 50) + "px";
+        // 设置img的z-index
+        this.img.style.zIndex = Math.floor(Math.random() * 100);
+    }
+
+    // 1-100之间的随机数
+    var num = Math.floor(Math.random() * 100) + 1;
+    // 生成50个表情
+    for (var i = 0; i <= 100; i++) {
+        if(i === num){
+            new Emoji();
+        }else{
+            new Emoji(true);
+        }
+    }
+
+
+</script>
+</html>
